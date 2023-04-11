@@ -268,9 +268,10 @@
              (#js.ctx.lineTo (posn-x pt) (posn-y pt))
              (loop (cdr points)))))))])
 
-(define (empty-scene width height)
-  (rectangle width height "solid" "white")
-  (rectangle width height "outline" "black"))   
+(define (empty-scene width height [color "white"])
+  (overlay
+    (rectangle width height "solid" color)
+    (rectangle width height "outline" "black")))
 
 (define (text txt size color)
   (new (Text txt
