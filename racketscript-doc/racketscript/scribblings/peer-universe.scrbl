@@ -1,30 +1,28 @@
 #lang scribble/manual
 @(require (for-label racket/base
-                     ; "../main.rkt"
-                     2htdp/universe
-                     ))
+                     2htdp/universe))
 
-@title{RacketScript Universe}
+@title{Peer-Universe for RacketScript}
 @author[(author+email "Ayden Diel" "aydendiel@gmail.com")]
 
-@defmodule[racketscript-universe]
+@defmodule[racketscript/htdp/peer-universe]
 @;{
     for some reason I can't link to the 2htdp/universe docs, so I just linked to the htdp docs instead
     }
-Experimental implementation of Racket's @racket[2htdp/universe] library for @seclink["top" #:doc '(lib "racketscript/scribblings/racketscript.scrbl") "RacketScript"]. Used to create distributed programs where both the server and the clients run in the browser.
+Experimental implementation of Racket's @racket[2htdp/universe] library for @seclink["top" #:doc '(lib "racketscript/scribblings/racketscript.scrbl") "RacketScript"] using peer-to-peer connections. Used to create distributed programs where both the server and the clients run in the browser.
 
 @itemlist[@item{@secref["getting-started"]}
           @item{@secref["how-it-works"]}
           @item{@secref["differences"]}]
 
 @section[#:tag "getting-started"]{Getting Started}
-Since this library is just an implementation of @hyperlink["https://docs.racket-lang.org/teachpack/2htdpuniverse.html"]{2htdp/universe}, use those docs as your main reference. These docs will contain info about how racketscript-universe works and how it differs from the original, but won't contain an in-depth API description.
+Since this library is primarily an implementation of the @hyperlink["https://docs.racket-lang.org/teachpack/2htdpuniverse.html"]{2htdp/universe} API, use those docs as your main reference. These docs will contain info about how @seclink["Peer-Universe_for_RacketScript"]{peer-universe} works and how it differs from the original, but won't contain an in-depth API description.
 
 @margin-note*{
-    See @hyperlink["https://github.com/leiDnedyA/rs-universe-server-test/blob/master/src/app.rkt"]{this example on github} for one way of setting up your project.
+    See @hyperlink["https://github.com/leiDnedyA/rs-universe-server-test/blob/master/src/app.rkt"]{this example on github} for an example where the landing page has the user choose whether to start a @racket[universe] or @racket[big-bang] instance.
 }
 
-To use the library, you need to be running a separate server (@racket[universe]) and client (@racket[big-bang]) instance at the same time, both in separate browser windows. You then need to pass the server's peer id (which is currently "server" by default but will be changed) to the client's @racket[big-bang] call, and a connection will be established.
+To use the library, you need to be running a separate @racket[universe] and @racket[big-bang] instance at the same time, both in separate browser windows. You then need to pass the server's peer id (which is an optional argument for @racket[universe], and logged once the server is started) to the client's @racket[big-bang] call, and a connection will be established.
 
 @section[#:tag "how-it-works"]{How does it work?}
 
@@ -32,7 +30,7 @@ We use @hyperlink["https://peerjs.com/"]{PeerJS} under the hood to mimic client-
 
 @margin-note{PeerJS's @hyperlink["https://peerjs.com/peerserver"]{PeerServer Cloud Serrvice} handles all of the traffic behind the scenes so that you don't have to worry about it.}
 
-@section[#:tag "differences"]{Differences from 2htdp/universe}
+@section[#:tag "differences"]{Differences from the 2htdp/universe API}
 
 In practice, this library only differs from @hyperlink["https://docs.racket-lang.org/teachpack/2htdpuniverse.html"]{2htdp/universe} when setting up connections (plus some slight differences in dependencies). Here's everything you need to know on top of the original docs.
 
