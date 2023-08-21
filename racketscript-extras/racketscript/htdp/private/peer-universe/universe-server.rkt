@@ -80,7 +80,7 @@
     (:= #js.this.-active-iworlds ($/array))
     (:= #js.this.-disconnect-tasks ($/array))
 
-    (:= #js.this.-peer-id DEFAULT-UNIVERSE-ID)
+    (:= #js.this.-peer-id (generate-id))
 
     (:= #js.this.-idle       #t)
     (:= #js.this.-stopped    #t)
