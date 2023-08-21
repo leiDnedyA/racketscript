@@ -35,7 +35,6 @@
          on-disconnect
          server-id
          
-        ;  peerjs
          Peer)
 
 ;; Adds peerjs exports (primarily Peer constructor) to window object
