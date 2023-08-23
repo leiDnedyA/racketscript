@@ -2,7 +2,8 @@
 
 (require (for-syntax racketscript/base
                      syntax/parse)
-         "jscommon.rkt")
+         "jscommon.rkt"
+         "util.rkt")
 
 (provide create-login-form)
 
@@ -31,7 +32,7 @@
   (:= #js.name-label.innerHTML        #js"Username")
   (:= #js.server-id-label.innerHTML   #js"Universe's Peer ID")
   (:= #js.name-input.placeholder      #js"michael1234")
-  (:= #js.server-id-input.placeholder #js"weird-pickle")
+  (:= #js.server-id-input.placeholder (js-string (generate-id)))
   (:= #js.form-submit.type            #js"submit")
   (:= #js.form-submit.value           #js"Join!")
   
