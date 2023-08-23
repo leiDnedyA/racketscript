@@ -4,29 +4,9 @@
                      syntax/parse)
          "server-gui.rkt"
          "encode-decode.rkt"
-         "debug-tools.rkt"
          "universe-primitives.rkt"
          "jscommon.rkt"
          "util.rkt")
-
-; TODO:
-; implement deregister for on-msg handler
-; implement the following handlers
-; - to-string
-; - check-with
-; - state
-
-; Variations from api:
-; - no port handler
-; - create clause for user to pass in
-;   root element for logging GUI
-
-; Add to logs:
-; u: current universe state
-; Events to log:
-; - mail sending:
-;   "broadcast failed to ~a" iworld name
-;   "~s not on the list" iworld name
 
 (provide universe
 
@@ -42,14 +22,12 @@
 
 (define Peer #js*.window.Peer)
 
-(define DEFAULT-UNIVERSE-ID "server") ;; Change this
-
 (define *default-frames-per-second* 70)
 
-;; Universe server
 (define (make-universe init-state handlers gui-root)
-  (new (Universe init-state handlers (if ($/binop != gui-root $/null)
-                                         gui-root #js*.document.body))))
+  (new (Universe init-state handlers 
+                 (if ($/binop != gui-root $/null)    ;; Workaround for problem with 
+                     gui-root #js*.document.body)))) ;; default args in nested functions
 
 (define (universe init-state #:dom-root [gui-root $/null] . handlers)
   ($> (make-universe init-state handlers gui-root)
@@ -63,12 +41,11 @@
     (:= #js.this.interval   (/ 1000 *default-frames-per-second*))
     (:= #js.this.handlers   handlers)
 
+    ;; Lets evt handlers check whether they're being passed a universe or
+    ;; big-bang instance, so they can adjust their behavior
     (:= #js.this.is-universe? #true)
 
-    (:= #js.this.gui (server-gui gui-root
-                                ;  #js.this.stop
-                                ;  (λ () ($> #js.this.stop #js.this.setup #js.this.start))
-                                 )) ;; TODO: allow user to pass root element? & Fix stop/restart cb's
+    (:= #js.this.gui (server-gui gui-root))
 
     (:= #js.this.-active-handlers         ($/obj))
     (:= #js.this.-state-change-listeners  ($/array))
@@ -94,7 +71,7 @@
        (#js.this.gui.log (format "~a signed up" (js-string->string #js.conn.label))))
      (define (log-new-msg iw data)
        (#js.this.gui.log (format "~a --> universe:\n<~a>"
-                                        (iworld-name iw) (msg->string (decode-data data)))))
+                                 (iworld-name iw) (msg->string (decode-data data)))))
 
      (#js.this.add-peer-init-task (λ (peer)
                                     (#js.peer.on #js"connection"
@@ -105,8 +82,10 @@
    (λ ()
      #:with-this this
      (#js.this.init-peer-connection)
+     (define peer-id (js-string->string #js.this.-peer.id))
      (#js.this.gui.log (format "a new universe is up and running with id ~s" 
-                               (js-string->string #js.this.-peer.id)))
+                               peer-id))
+     (#js.this.gui.set-id! peer-id)
      this)]
   [register-handlers
    (λ ()
@@ -132,15 +111,29 @@
    (λ ()
      #:with-this this
      (#js.this.gui.log "stopping the universe\n----------------------------------")
+     (#js.this.clear-event-queue)
+     (set-object! this
+                  [-stopped #t]
+                  [-idle    #t])
+     (#js.this.deregister-handlers)
+     (#js.this.-canvas.remove)
+     (set-object! #js.this
+                  [-active-handlers ($/obj)]
+                  [handlers '()])
      (void))]
   [clear-event-queue
    (λ ()
      #:with-this this
      (#js.this.-events.splice 0 #js.this.-events.length))]
   [add-state-change-listener
-   (λ () 0)]
+   (λ (cb) 
+     #:with-this this
+     (#js.this.-state-change-listeners.push cb))]
   [remove-state-change-listener
-   (λ () 0)]
+   (λ (cb)
+     #:with-this this
+     (define index (#js.this.-state-change-listeners.indexOf cb))
+     (#js.this.-state-change-listeners.splice index 1))]
   [queue-event
    (λ (e)
      #:with-this this
