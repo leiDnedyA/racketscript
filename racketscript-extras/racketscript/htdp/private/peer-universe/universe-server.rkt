@@ -2,10 +2,10 @@
 
 (require (for-syntax racketscript/base
                      syntax/parse)
+         "../../../private/jscommon.rkt"
          "server-gui.rkt"
          "encode-decode.rkt"
          "universe-primitives.rkt"
-         "jscommon.rkt"
          "util.rkt")
 
 (provide universe

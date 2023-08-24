@@ -2,8 +2,8 @@
 
 (require (for-syntax racketscript/base
                      syntax/parse)
+         "../private/jscommon.rkt"
          "./private/peer-universe/universe-primitives.rkt"
-         "./private/peer-universe/jscommon.rkt"
          "./private/peer-universe/encode-decode.rkt"
          "./private/peer-universe/universe-server.rkt"
          "./private/peer-universe/login-form.rkt")

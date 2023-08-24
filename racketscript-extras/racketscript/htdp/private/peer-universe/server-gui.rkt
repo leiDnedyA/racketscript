@@ -5,7 +5,7 @@
          "encode-decode.rkt"
          "debug-tools.rkt"
          "universe-primitives.rkt"
-         "jscommon.rkt")
+         "../../../private/jscommon.rkt")
 
 (provide server-gui)
 
