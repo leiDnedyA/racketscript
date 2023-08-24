@@ -3,7 +3,6 @@
 (require (for-syntax racketscript/base
                      syntax/parse)
          "encode-decode.rkt"
-         "debug-tools.rkt"
          "universe-primitives.rkt"
          "jscommon.rkt")
 
